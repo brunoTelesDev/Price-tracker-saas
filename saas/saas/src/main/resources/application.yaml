@@ -1,3 +1,13 @@
 spring:
-  application:
-    name: saas
+  datasource:
+    url: jdbc:postgresql://localhost:5433/pricetracker
+    username: root
+    password: root
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true

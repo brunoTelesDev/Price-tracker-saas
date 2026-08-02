@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  postgres-db:
+    image: postgres:16
+    container_name: tracker_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: pricetracker
+    ports:
+      - "5433:5432"
