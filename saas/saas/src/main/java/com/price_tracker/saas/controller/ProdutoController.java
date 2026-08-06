@@ -35,10 +35,21 @@ public class ProdutoController {
 
         produto.setUsuario(usuario);
 
-        // 🤖 A MÁGICA ACONTECE AQUI: O robô entra em ação!
-        System.out.println("Chamando o robô para ler a URL...");
-        BigDecimal precoLido = scraperService.buscarPreco(produto.getUrl());
-        produto.setPrecoAtual(precoLido);
+        try {
+            System.out.println("Chamando o robô para ler a URL: " + produto.getUrl());
+            BigDecimal precoLido = scraperService.buscarPreco(produto.getUrl());
+            produto.setPrecoAtual(precoLido);
+
+            // 🛠️ SOLUÇÃO: Se não informou preço desejado, usa o preço atual!
+            if (produto.getPrecoDesejado() == null) {
+                produto.setPrecoDesejado(precoLido);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar preço com o robô: " + e.getMessage());
+            produto.setPrecoAtual(BigDecimal.ZERO);
+            produto.setPrecoDesejado(BigDecimal.ZERO);
+        }
 
         return produtoRepository.save(produto);
     }
@@ -65,5 +76,40 @@ public class ProdutoController {
         produtoRepository.deleteAll(meusProdutos);
 
         return "Faxina concluída! Todos os seus produtos foram excluídos do sistema.";
+    }
+    // 1. Deletar um produto específico pelo ID
+    @DeleteMapping("/{id}")
+    public void deletarProduto(@PathVariable Long id, Authentication authentication) {
+        String email = authentication.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        // Garante que o usuário só pode deletar os próprios produtos
+        if (produto.getUsuario().getId().equals(usuario.getId())) {
+            produtoRepository.delete(produto);
+        }
+    }
+
+    // 2. Alternar status de monitoramento (Pausar / Retomar)
+    @PatchMapping("/{id}/status")
+    public Produto alternarStatus(@PathVariable Long id, Authentication authentication) {
+        String email = authentication.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Produto produto = produtoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
+        if (produto.getUsuario().getId().equals(usuario.getId())) {
+            // Se estiver ativo, pausa. Se estiver pausado, ativa.
+            boolean statusAtual = produto.isAtivo(); // certifique-se de ter o atributo boolean 'ativo' no model Produto
+            produto.setAtivo(!statusAtual);
+            return produtoRepository.save(produto);
+        }
+
+        throw new RuntimeException("Acesso negado");
     }
 }

@@ -20,14 +20,38 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/status", "/api/usuarios/cadastrar").permitAll()
+                        .requestMatchers(
+                                "/login",
+                                "/cadastro",
+                                "/api/usuarios/cadastrar",
+                                "/status",
+                                "/css/**",
+                                "/js/**",
+                                "/img/**"
+                        ).permitAll()
+
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.defaultSuccessUrl("/status", true))
-                .httpBasic(Customizer.withDefaults()); // Permite autenticação direta no Postman!
+
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .defaultSuccessUrl("/dashboard", true)
+                        .permitAll()
+                )
+
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                )
+
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }

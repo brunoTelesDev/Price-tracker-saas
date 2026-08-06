@@ -1,0 +1,231 @@
+/* --- RESET E CORES GLOBAIS --- */
+:root {
+    --bg-dark: #081420;
+    --nav-bg: #0d1b2a;
+    --card-bg: #13283f;
+    --card-border: #1e3a5f;
+    --accent-green: #2ecc71;
+    --accent-hover: #27ae60;
+    --text-muted: #8fa7bd;
+}
+
+body {
+    background-color: var(--bg-dark) !important;
+    color: #ffffff !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- NAVBAR SAAS --- */
+.navbar-custom {
+    background-color: rgba(13, 27, 42, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--card-border);
+    padding: 15px 0;
+}
+
+.text-accent {
+    color: var(--accent-green) !important;
+}
+
+.brand-icon {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--accent-green);
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    background: var(--accent-green);
+    color: var(--bg-dark);
+    font-weight: bold;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- TIPOGRAFIA E BOTOES --- */
+.titulo {
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #ffffff !important;
+}
+
+.subtitulo {
+    color: var(--text-muted) !important;
+}
+
+.btn-accent {
+    background-color: var(--accent-green) !important;
+    color: var(--bg-dark) !important;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-accent:hover {
+    background-color: var(--accent-hover) !important;
+    color: var(--bg-dark) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.3);
+}
+
+/* --- CARDS DE METRICAS (KPIs) --- */
+.card-dashboard {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px;
+    padding: 25px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.card-dashboard:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent-green) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(46, 204, 113, 0.15);
+}
+
+.card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 12px;
+}
+
+.card-title {
+    color: var(--text-muted) !important;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+
+.card-value {
+    font-weight: 800 !important;
+    font-size: 2.2rem !important;
+    margin: 0 !important;
+    color: #ffffff !important;
+}
+
+/* --- TABELA DE PRODUTOS --- */
+.card-table {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.table-custom {
+    color: #ffffff !important;
+    --bs-table-bg: transparent !important;
+    --bs-table-color: #ffffff !important;
+}
+
+.table-custom thead {
+    background-color: rgba(8, 20, 32, 0.6) !important;
+}
+
+.table-custom th {
+    color: var(--text-muted) !important;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--card-border) !important;
+    background-color: transparent !important;
+}
+
+.table-custom td {
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(30, 58, 95, 0.5) !important;
+    color: #ffffff !important;
+    background-color: transparent !important;
+}
+
+.table-custom tbody tr:hover td {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* BOTOES DE ACAO NA TABELA */
+.btn-outline-light {
+    border-color: var(--card-border) !important;
+    color: var(--text-muted) !important;
+}
+
+.btn-outline-light:hover {
+    background-color: var(--accent-green) !important;
+    color: var(--bg-dark) !important;
+    border-color: var(--accent-green) !important;
+}
+
+.btn-outline-warning {
+    border-color: rgba(241, 196, 15, 0.4) !important;
+    color: #f1c40f !important;
+}
+
+.btn-outline-warning:hover {
+    background-color: #f1c40f !important;
+    color: #081420 !important;
+}
+
+.btn-outline-danger {
+    border-color: rgba(231, 76, 60, 0.4) !important;
+    color: #e74c3c !important;
+}
+
+.btn-outline-danger:hover {
+    background-color: #e74c3c !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-success {
+    border-color: rgba(46, 204, 113, 0.4) !important;
+    color: #2ecc71 !important;
+}
+
+.btn-outline-success:hover {
+    background-color: #2ecc71 !important;
+    color: #081420 !important;
+}
+
+/* --- MODAL E FORMULARIOS --- */
+.modal-content {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 20px !important;
+}
+
+.modal-content .form-label {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+    font-size: 0.85rem !important;
+}
+
+.modal-content .form-text {
+    color: var(--text-muted) !important;
+    font-size: 0.8rem !important;
+}
+
+.modal-content input.form-control {
+    background-color: #081420 !important;
+    color: #ffffff !important;
+    border: 1px solid var(--card-border) !important;
+    border-radius: 10px !important;
+    padding: 12px 15px !important;
+}
+
+.modal-content input.form-control::placeholder {
+    color: #5c7894 !important;
+}
+
+.modal-content input.form-control:focus {
+    background-color: #0d1b2a !important;
+    color: #ffffff !important;
+    border-color: var(--accent-green) !important;
+    box-shadow: 0 0 10px rgba(46, 204, 113, 0.3) !important;
+}

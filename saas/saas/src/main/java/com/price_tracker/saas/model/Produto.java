@@ -15,7 +15,8 @@ public class Produto {
 
     @Column(nullable = false)
     private String url; // O link da loja (Amazon, Mercado Livre, etc.)
-
+    @Column(columnDefinition = "boolean default true")
+    private boolean ativo = true;
     private String nome; // O nome do produto (nosso robô vai preencher isso depois)
 
     private BigDecimal precoAtual; // O preço que o robô encontrou
