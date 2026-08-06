@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Tracker - Histórico de Preços</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/dashboard">
+            <span class="brand-icon"><i class="bi bi-graph-up-arrow"></i></span>
+            <span class="text-white">Price</span><span class="text-accent">Tracker</span>
+        </a>
+
+        <div class="ms-auto d-flex align-items-center gap-3">
+            <a href="/dashboard" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="container my-5">
+    <div class="mb-4">
+        <h2 class="titulo mb-1">Histórico de Preços</h2>
+        <p class="subtitulo">Veja a variação e o menor preço registrado por dia de cada produto.</p>
+    </div>
+
+    <div class="card card-dashboard mb-4">
+        <label class="form-label text-white fw-bold mb-2">SELECIONE O PRODUTO:</label>
+        <select id="selectProduto" class="form-select bg-dark text-white border-secondary" onchange="carregarGrafico()">
+            <option value="">Carregando produtos...</option>
+        </select>
+    </div>
+
+    <div class="card card-dashboard">
+        <h5 class="fw-bold text-white mb-4">
+            <i class="bi bi-graph-down-arrow text-accent me-2"></i>Evolução do Menor Preço Diário
+        </h5>
+        <div style="position: relative; height: 380px;">
+            <canvas id="graficoPrecos"></canvas>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    let meuGrafico = null;
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Busca a lista de produtos do usuário para preencher o select
+        fetch("/api/produtos")
+            .then(res => res.json())
+            .then(produtos => {
+                const select = document.getElementById("selectProduto");
+                select.innerHTML = "";
+
+                if (produtos.length === 0) {
+                    select.innerHTML = `<option value="">Nenhum produto cadastrado para exibir gráfico</option>`;
+                    return;
+                }
+
+                produtos.forEach(p => {
+                    select.innerHTML += `<option value="${p.id}">${p.nome}</option>`;
+                });
+
+                // Carrega o gráfico do primeiro produto da lista
+                carregarGrafico();
+            })
+            .catch(err => console.error("Erro ao carregar lista de produtos:", err));
+    });
+
+    function carregarGrafico() {
+        const produtoId = document.getElementById("selectProduto").value;
+        if (!produtoId) return;
+
+        fetch(`/api/produtos/${produtoId}/historico`)
+            .then(res => res.json())
+            .then(dados => {
+                const datas = dados.map(d => d.data);
+                const precos = dados.map(d => d.precoMinimoDoDia);
+
+                renderizarGrafico(datas, precos);
+            })
+            .catch(err => console.error("Erro ao buscar histórico:", err));
+    }
+
+    function renderizarGrafico(datas, precos) {
+        const ctx = document.getElementById('graficoPrecos').getContext('2d');
+
+        if (meuGrafico) {
+            meuGrafico.destroy(); // Limpa o gráfico anterior
+        }
+
+        meuGrafico = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: datas,
+                datasets: [{
+                    label: 'Menor Preço do Dia (R$)',
+                    data: precos,
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.15)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#2ecc71',
+                    pointBorderColor: '#ffffff',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#ffffff', font: { family: 'Segoe UI', size: 14 } } }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#8fa7bd' },
+                        grid: { color: 'rgba(30, 58, 95, 0.3)' }
+                    },
+                    y: {
+                        ticks: {
+                            color: '#8fa7bd',
+                            callback: function(value) { return 'R$ ' + value; }
+                        },
+                        grid: { color: 'rgba(30, 58, 95, 0.3)' }
+                    }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

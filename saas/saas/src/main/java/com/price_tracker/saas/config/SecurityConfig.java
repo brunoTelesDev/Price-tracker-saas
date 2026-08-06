@@ -2,6 +2,7 @@ package com.price_tracker.saas.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,9 +23,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                // Desabilita CSRF para permitir requisições fetch/REST do JavaScript
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
+                        // 1. Recursos públicos e arquivos estáticos (CSS, JS, Imagens)
                         .requestMatchers(
                                 "/login",
                                 "/cadastro",
@@ -32,9 +35,17 @@ public class SecurityConfig {
                                 "/status",
                                 "/css/**",
                                 "/js/**",
-                                "/img/**"
+                                "/img/**",
+                                "/webjars/**"
                         ).permitAll()
 
+                        // 2. Permite acesso explícito às páginas de Dashboard e Histórico para usuários logados
+                        .requestMatchers("/dashboard", "/historico", "/produtos").authenticated()
+
+                        // 3. Garante que os métodos REST (GET, POST, PATCH, DELETE) na API de produtos funcionem
+                        .requestMatchers("/api/produtos/**").authenticated()
+
+                        // Qualquer outra rota exige autenticação
                         .anyRequest().authenticated()
                 )
 

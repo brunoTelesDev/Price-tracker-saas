@@ -3,6 +3,7 @@ package com.price_tracker.saas.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Entity
@@ -14,17 +15,22 @@ public class Produto {
     private Long id;
 
     @Column(nullable = false)
-    private String url; // O link da loja (Amazon, Mercado Livre, etc.)
+    private String url;
+
     @Column(columnDefinition = "boolean default true")
     private boolean ativo = true;
-    private String nome; // O nome do produto (nosso robô vai preencher isso depois)
 
-    private BigDecimal precoAtual; // O preço que o robô encontrou
+    private String nome;
+
+    private BigDecimal precoAtual;
 
     @Column(nullable = false)
-    private BigDecimal precoDesejado; // O preço que você quer pagar para ser avisado
+    private BigDecimal precoDesejado;
 
-    // Relacionamento: Vários produtos pertencem a Um usuário
+    // Exclusão em cascata: ao deletar o produto, limpa todo o histórico associado automaticamente
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HistoricoPreco> historicos;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;

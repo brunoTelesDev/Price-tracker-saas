@@ -12,12 +12,16 @@
 
 <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
     <div class="container">
-        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/dashboard">
             <span class="brand-icon"><i class="bi bi-graph-up-arrow"></i></span>
             <span class="text-white">Price</span><span class="text-accent">Tracker</span>
         </a>
 
         <div class="ms-auto d-flex align-items-center gap-3">
+            <a href="/historico" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                <i class="bi bi-graph-up me-1 text-accent"></i> Histórico
+            </a>
+
             <div class="user-profile d-flex align-items-center gap-2">
                 <div class="avatar">B</div>
                 <span class="text-light fw-medium d-none d-sm-inline">Olá, Bruno 👋</span>
@@ -36,9 +40,14 @@
             <h2 class="titulo mb-1">Dashboard</h2>
             <p class="subtitulo mb-0">Acompanhe a variação e economia dos seus produtos em tempo real.</p>
         </div>
-        <button class="btn btn-accent btn-lg d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalAdicionarProduto">
-            <i class="bi bi-plus-lg"></i> Adicionar Produto
-        </button>
+        <div class="d-flex gap-2">
+            <a href="/historico" class="btn btn-outline-light btn-lg d-flex align-items-center gap-2">
+                <i class="bi bi-graph-up-arrow text-accent"></i> Ver Gráficos
+            </a>
+            <button class="btn btn-accent btn-lg d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalAdicionarProduto">
+                <i class="bi bi-plus-lg"></i> Adicionar Produto
+            </button>
+        </div>
     </div>
 
     <div class="row g-4 mb-5">
@@ -70,7 +79,7 @@
     <div class="card card-table border-0">
         <div class="card-header bg-transparent border-0 p-4 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold m-0 text-white"><i class="bi bi-list-stars me-2 text-accent"></i>Produtos Recentes</h5>
-            <a href="/produtos" class="text-accent text-decoration-none small">Ver todos <i class="bi bi-arrow-right"></i></a>
+            <a href="/historico" class="text-accent text-decoration-none small">Ver histórico <i class="bi bi-arrow-right"></i></a>
         </div>
         <div class="table-responsive">
             <table class="table table-custom align-middle mb-0">
@@ -134,7 +143,6 @@
     document.addEventListener("DOMContentLoaded", function() {
         carregarProdutos();
 
-        // Cadastrar Produto via API REST
         document.getElementById("formAdicionarProduto").addEventListener("submit", function(e) {
             e.preventDefault();
 
@@ -174,7 +182,6 @@
         });
     });
 
-    // Carregar a lista de produtos
     function carregarProdutos() {
         fetch("/api/produtos")
             .then(res => res.json())
@@ -243,7 +250,6 @@
             .catch(err => console.error("Erro ao carregar produtos:", err));
     }
 
-    // Eliminar Produto
     function excluirProduto(id) {
         if (confirm("Tem certeza que deseja excluir este produto do monitoramento?")) {
             fetch(`/api/produtos/${id}`, { method: "DELETE" })
@@ -255,7 +261,6 @@
         }
     }
 
-    // Pausar/Retomar Status
     function alternarStatus(id) {
         fetch(`/api/produtos/${id}/status`, { method: "PATCH" })
             .then(response => {

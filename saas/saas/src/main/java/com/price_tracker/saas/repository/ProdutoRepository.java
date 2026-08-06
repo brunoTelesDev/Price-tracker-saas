@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
-    // O Spring cria o SQL automático para buscar todos os produtos de um usuário específico!
     List<Produto> findByUsuarioId(Long usuarioId);
+
+    // 🛠️ NOVO MÉTODO: Busca apenas produtos que estão com ativo = true
+    List<Produto> findByAtivoTrue();
 }
