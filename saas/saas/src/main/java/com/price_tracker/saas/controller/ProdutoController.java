@@ -50,4 +50,20 @@ public class ProdutoController {
                 .orElseThrow(() -> new RuntimeException("Utilizador não encontrado"));
         return produtoRepository.findByUsuarioId(usuario.getId());
     }
+    // 3. Deletar todos os produtos do utilizador autenticado
+    @DeleteMapping
+    public String deletarTodosMeusProdutos(Authentication authentication) {
+        String email = authentication.getName();
+
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilizador não encontrado"));
+
+        // Busca todos os produtos desse usuário
+        List<Produto> meusProdutos = produtoRepository.findByUsuarioId(usuario.getId());
+
+        // Apaga todos eles de uma vez do banco de dados
+        produtoRepository.deleteAll(meusProdutos);
+
+        return "Faxina concluída! Todos os seus produtos foram excluídos do sistema.";
+    }
 }
