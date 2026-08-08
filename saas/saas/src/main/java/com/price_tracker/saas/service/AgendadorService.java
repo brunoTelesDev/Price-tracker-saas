@@ -17,26 +17,27 @@ public class AgendadorService {
 
     private final ProdutoRepository produtoRepository;
     private final ScraperService scraperService;
-    private final TelegramBotService telegramBotService; // O nosso Carteiro!
-    private final HistoricoPrecoRepository historicoPrecoRepository; // Repositório para o histórico do gráfico
+    private final TelegramBotService telegramBotService;
+    private final HistoricoPrecoRepository historicoPrecoRepository;
 
-    // Injetando as dependências
-    public AgendadorService(ProdutoRepository produtoRepository,
-                            ScraperService scraperService,
-                            TelegramBotService telegramBotService,
-                            HistoricoPrecoRepository historicoPrecoRepository) {
+    public AgendadorService(
+            ProdutoRepository produtoRepository,
+            ScraperService scraperService,
+            TelegramBotService telegramBotService,
+            HistoricoPrecoRepository historicoPrecoRepository
+    ) {
         this.produtoRepository = produtoRepository;
         this.scraperService = scraperService;
         this.telegramBotService = telegramBotService;
         this.historicoPrecoRepository = historicoPrecoRepository;
     }
 
-    // 🕒 Roda a cada 5 minutos (300000 ms)
+    // Roda a cada 5 minutos
     @Scheduled(fixedRate = 300000)
     public void verificarPrecosDosProdutos() {
+
         System.out.println("\n⏰ [DESPERTADOR] Iniciando verificação automática de preços...");
 
-        // 🛠️ CORREÇÃO: Busca apenas produtos que estão com ativo = true
         List<Produto> produtosAtivos = produtoRepository.findByAtivoTrue();
 
         if (produtosAtivos.isEmpty()) {
@@ -45,7 +46,7 @@ public class AgendadorService {
         }
 
         for (Produto produto : produtosAtivos) {
-            // Trava de segurança adicional
+
             if (!produto.isAtivo()) {
                 continue;
             }
@@ -53,64 +54,139 @@ public class AgendadorService {
             System.out.println("🔎 Verificando: " + produto.getNome());
 
             try {
+
                 BigDecimal novoPreco = scraperService.buscarPreco(produto.getUrl());
 
                 if (novoPreco != null && novoPreco.compareTo(BigDecimal.ZERO) > 0) {
-                    // 1. Atualiza o preço atual do produto
+
+                    // Atualiza preço atual
                     produto.setPrecoAtual(novoPreco);
                     produtoRepository.save(produto);
 
-                    // 2. Registra / Atualiza o histórico do dia (Menor preço do dia)
+                    // Atualiza histórico
                     salvarOuAtualizarHistoricoDoDia(produto, novoPreco);
 
-                    // 3. 🚨 REGRA DO ALERTA: O preço atual bateu a meta?
-                    if (novoPreco.compareTo(produto.getPrecoDesejado()) <= 0) {
-                        System.out.println("🚨 [ALERTA] Meta atingida para: " + produto.getNome());
+                    // Verifica se atingiu a meta
+                    if (produto.getPrecoDesejado() != null
+                            && novoPreco.compareTo(produto.getPrecoDesejado()) <= 0) {
 
-                        String seuChatId = "6878602610";
-                        telegramBotService.enviarAlerta(
-                                seuChatId,
-                                produto.getNome(),
-                                produto.getUrl(),
-                                novoPreco.toString()
+                        System.out.println(
+                                "🚨 [ALERTA] Meta atingida para: "
+                                        + produto.getNome()
                         );
+
+                        // ==========================================
+                        // PEGA O DONO DO PRODUTO
+                        // ==========================================
+
+                        String chatId = produto.getUsuario().getTelegramChatId();
+
+                        // ==========================================
+                        // VERIFICA SE O USUÁRIO TEM TELEGRAM
+                        // ==========================================
+
+                        if (chatId != null && !chatId.isBlank()) {
+
+                            System.out.println(
+                                    "📨 Enviando alerta para o usuário: "
+                                            + produto.getUsuario().getEmail()
+                                            + " | Chat ID: "
+                                            + chatId
+                            );
+
+                            telegramBotService.enviarAlerta(
+                                    chatId,
+                                    produto.getNome(),
+                                    produto.getUrl(),
+                                    novoPreco.toString()
+                            );
+
+                        } else {
+
+                            System.out.println(
+                                    "⚠️ Usuário "
+                                            + produto.getUsuario().getEmail()
+                                            + " ainda não possui Telegram vinculado."
+                            );
+                        }
+
                     } else {
-                        System.out.println("⏳ O produto " + produto.getNome() + " ainda está caro.");
+
+                        System.out.println(
+                                "⏳ O produto "
+                                        + produto.getNome()
+                                        + " ainda está caro."
+                        );
                     }
                 }
+
             } catch (Exception e) {
-                System.err.println("❌ Erro ao verificar o produto " + produto.getNome() + ": " + e.getMessage());
+
+                System.err.println(
+                        "❌ Erro ao verificar o produto "
+                                + produto.getNome()
+                                + ": "
+                                + e.getMessage()
+                );
             }
         }
+
         System.out.println("✅ [DESPERTADOR] Verificação concluída!\n");
     }
 
     /**
      * Regra do Histórico Diário:
-     * Garante que apenas 1 registro exista por dia para cada produto.
-     * Se já existir, só atualiza se o preço novo for MENOR que o antigo do dia!
+     *
+     * Mantém apenas um registro por dia para cada produto.
+     * Se o preço novo for menor, atualiza o mínimo do dia.
      */
-    private void salvarOuAtualizarHistoricoDoDia(Produto produto, BigDecimal precoLido) {
+    private void salvarOuAtualizarHistoricoDoDia(
+            Produto produto,
+            BigDecimal precoLido
+    ) {
+
         LocalDate hoje = LocalDate.now();
 
-        Optional<HistoricoPreco> historicoHojeOpt = historicoPrecoRepository.findByProdutoIdAndData(produto.getId(), hoje);
+        Optional<HistoricoPreco> historicoHojeOpt =
+                historicoPrecoRepository.findByProdutoIdAndData(
+                        produto.getId(),
+                        hoje
+                );
 
         if (historicoHojeOpt.isPresent()) {
-            HistoricoPreco historicoHoje = historicoHojeOpt.get();
-            // Se o novo preço for menor do que o que já estava salvo hoje, atualiza!
-            if (precoLido.compareTo(historicoHoje.getPrecoMinimoDoDia()) < 0) {
+
+            HistoricoPreco historicoHoje =
+                    historicoHojeOpt.get();
+
+            if (precoLido.compareTo(
+                    historicoHoje.getPrecoMinimoDoDia()
+            ) < 0) {
+
                 historicoHoje.setPrecoMinimoDoDia(precoLido);
+
                 historicoPrecoRepository.save(historicoHoje);
-                System.out.println("📊 Novo preço mínimo do dia registrado no histórico para: " + produto.getNome());
+
+                System.out.println(
+                        "📊 Novo preço mínimo do dia registrado para: "
+                                + produto.getNome()
+                );
             }
+
         } else {
-            // Primeiro registro do dia
-            HistoricoPreco novoHistorico = new HistoricoPreco();
+
+            HistoricoPreco novoHistorico =
+                    new HistoricoPreco();
+
             novoHistorico.setProduto(produto);
             novoHistorico.setData(hoje);
             novoHistorico.setPrecoMinimoDoDia(precoLido);
+
             historicoPrecoRepository.save(novoHistorico);
-            System.out.println("📊 Primeiro preço do dia registrado no histórico para: " + produto.getNome());
+
+            System.out.println(
+                    "📊 Primeiro preço do dia registrado para: "
+                            + produto.getNome()
+            );
         }
     }
 }

@@ -2,7 +2,6 @@ package com.price_tracker.saas.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,11 +38,14 @@ public class SecurityConfig {
                                 "/webjars/**"
                         ).permitAll()
 
-                        // 2. Permite acesso explícito às páginas de Dashboard e Histórico para usuários logados
-                        .requestMatchers("/dashboard", "/historico", "/produtos").authenticated()
+                        // 👑 2. RESTRIÇÃO SUPREMA: Apenas usuários com ROLE_ADMIN acessam rotas de Admin
+                        .requestMatchers("/admin", "/admin/**", "/api/admin/**").hasRole("ADMIN")
 
-                        // 3. Garante que os métodos REST (GET, POST, PATCH, DELETE) na API de produtos funcionem
-                        .requestMatchers("/api/produtos/**").authenticated()
+                        // 3. Permite acesso explícito às páginas do sistema para usuários logados
+                        .requestMatchers("/dashboard", "/historico", "/produtos", "/perfil").authenticated()
+
+                        // 4. Garante que os métodos REST da API funcionem para usuários logados
+                        .requestMatchers("/api/produtos/**", "/api/telegram/**").authenticated()
 
                         // Qualquer outra rota exige autenticação
                         .anyRequest().authenticated()
