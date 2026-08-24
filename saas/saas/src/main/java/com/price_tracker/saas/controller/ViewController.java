@@ -36,10 +36,15 @@ public class ViewController {
         if (authentication != null && authentication.isAuthenticated()) {
             String email = authentication.getName();
 
-            // Pega o nome a partir da primeira parte do e-mail (ex: bruno em bruno@email.com)
+            // Pega o nome do e-mail
             String nomeExibicao = email.contains("@") ? email.split("@")[0] : email;
-
             model.addAttribute("nomeUsuario", nomeExibicao);
+
+            // Busca usuário no banco para checar se é ADMIN
+            Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+            boolean isAdmin = usuario != null && "ROLE_ADMIN".equals(usuario.getRole());
+
+            model.addAttribute("isAdmin", isAdmin);
         }
 
         return "dashboard";
@@ -59,6 +64,7 @@ public class ViewController {
     public String perfil() {
         return "perfil";
     }
+
     @GetMapping("/admin")
     public String admin() {
         return "admin"; // Retorna admin.html

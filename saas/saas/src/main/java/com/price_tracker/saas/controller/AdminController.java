@@ -1,9 +1,10 @@
 package com.price_tracker.saas.controller;
 
+import com.price_tracker.saas.model.Produto;
 import com.price_tracker.saas.model.Usuario;
-import com.price_tracker.saas.repository.UsuarioRepository;
 import com.price_tracker.saas.repository.ProdutoRepository;
-import org.springframework.security.access.prepost.PreAuthorize;
+import com.price_tracker.saas.repository.UsuarioRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -20,9 +21,9 @@ public class AdminController {
         this.produtoRepository = produtoRepository;
     }
 
-    // Lista TODOS os usuários e o total de produtos de cada um
+    // 1. LISTAR TODOS OS USUÁRIOS
     @GetMapping("/usuarios")
-    public List<Map<String, Object>> listarTodosUsuarios() {
+    public ResponseEntity<List<Map<String, Object>>> listarTodosUsuarios() {
         List<Usuario> usuarios = usuarioRepository.findAll();
         List<Map<String, Object>> resposta = new ArrayList<>();
 
@@ -30,11 +31,46 @@ public class AdminController {
             Map<String, Object> dados = new HashMap<>();
             dados.put("id", u.getId());
             dados.put("email", u.getEmail());
-            dados.put("telegramConectado", u.getTelegramChatId() != null);
-            dados.put("totalProdutos", produtoRepository.findByUsuarioId(u.getId()).size());
+            dados.put("role", u.getRole() != null ? u.getRole() : "ROLE_USER");
+            dados.put("telegramConectado", u.getTelegramChatId() != null && !u.getTelegramChatId().isBlank());
+
+            List<Produto> produtosUsuario = produtoRepository.findByUsuarioId(u.getId());
+            dados.put("totalProdutos", produtosUsuario.size());
+
             resposta.add(dados);
         }
 
-        return resposta;
+        return ResponseEntity.ok(resposta);
+    }
+
+    // 2. VER PRODUTOS DE UM USUÁRIO ESPECÍFICO
+    @GetMapping("/usuarios/{id}/produtos")
+    public ResponseEntity<List<Produto>> obterProdutosDoUsuario(@PathVariable Long id) {
+        List<Produto> produtos = produtoRepository.findByUsuarioId(id);
+        return ResponseEntity.ok(produtos);
+    }
+
+    // 3. EXCLUIR PRODUTO (COMO ADMIN)
+    @DeleteMapping("/produtos/{id}")
+    public ResponseEntity<Void> excluirProduto(@PathVariable Long id) {
+        if (produtoRepository.existsById(id)) {
+            produtoRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    // 4. SUSPENDER / EXCLUIR USUÁRIO (OPCIONAL)
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<Void> excluirUsuario(@PathVariable Long id) {
+        if (usuarioRepository.existsById(id)) {
+            // Apaga os produtos do usuário primeiro para não quebrar a chave estrangeira
+            List<Produto> produtos = produtoRepository.findByUsuarioId(id);
+            produtoRepository.deleteAll(produtos);
+
+            usuarioRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
