@@ -229,3 +229,52 @@ body {
     border-color: var(--accent-green) !important;
     box-shadow: 0 0 10px rgba(46, 204, 113, 0.3) !important;
 }
+/* --- STATUS DO TELEGRAM --- */
+
+.telegram-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.telegram-status .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.telegram-status.conectado {
+    color: var(--accent-green);
+}
+
+.telegram-status.conectado .status-indicator {
+    background-color: var(--accent-green);
+    box-shadow: 0 0 8px rgba(46, 204, 113, 0.7);
+}
+
+.telegram-status.desconectado {
+    color: var(--text-muted);
+}
+
+.telegram-status.desconectado .status-indicator {
+    background-color: #f1c40f;
+}
+
+.btn-telegram {
+    border: 1px solid rgba(46, 204, 113, 0.4);
+    color: var(--accent-green);
+    background: transparent;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.btn-telegram:hover {
+    background-color: var(--accent-green);
+    color: var(--bg-dark);
+    border-color: var(--accent-green);
+}

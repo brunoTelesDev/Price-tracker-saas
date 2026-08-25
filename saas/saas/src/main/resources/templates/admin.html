@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Supremo Admin - Price Tracker</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-dark text-white">
+
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/dashboard">
+            <span class="brand-icon">
+                <i class="bi bi-shield-lock-fill text-warning"></i>
+            </span>
+            <span class="text-white">Painel</span>
+            <span class="text-warning">Administrador</span>
+        </a>
+
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <a href="/dashboard" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i> Dashboard
+            </a>
+            <a href="/logout" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                <i class="bi bi-box-arrow-right me-1"></i> Sair
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="container my-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h2 class="titulo mb-1">
+                Gestão Geral de Usuários 👑
+            </h2>
+            <p class="subtitulo mb-0">
+                Visualize os clientes cadastrados, monitore o uso do sistema e faça a gestão completa do SaaS.
+            </p>
+        </div>
+    </div>
+
+    <div class="card card-table border-0 shadow-lg">
+        <div class="card-header bg-transparent border-0 p-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold m-0 text-white">
+                <i class="bi bi-people-fill me-2 text-accent"></i>
+                Usuários Registrados
+            </h5>
+            <span class="badge bg-primary rounded-pill px-3 fs-6" id="badgeTotalUsuarios">0 Usuários</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-custom align-middle mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>E-MAIL</th>
+                    <th>PERFIL (ROLE)</th>
+                    <th>TELEGRAM</th>
+                    <th>PRODUTOS</th>
+                    <th class="text-end">AÇÕES DE ADMIN</th>
+                </tr>
+                </thead>
+                <tbody id="tabelaUsuariosBody">
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">Carregando usuários...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<div class="modal fade" id="modalProdutosUsuario" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-white">
+                    <i class="bi bi-box-seam me-2 text-accent"></i>
+                    Produtos do Usuário: <span id="usuarioEmailModal" class="text-accent"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>PRODUTO</th>
+                            <th>ATUAL</th>
+                            <th>ALVO</th>
+                            <th>AÇÃO</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tabelaProdutosUsuarioBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        carregarUsuarios();
+    });
+
+    // CARREGAR USUÁRIOS
+    function carregarUsuarios() {
+        fetch('/api/admin/usuarios')
+            .then(res => {
+                if (!res.ok) throw new Error("Acesso negado");
+                return res.json();
+            })
+            .then(usuarios => {
+                document.getElementById('badgeTotalUsuarios').innerText = `${usuarios.length} Usuários`;
+                const tbody = document.getElementById('tabelaUsuariosBody');
+                tbody.innerHTML = '';
+
+                if (usuarios.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">Nenhum usuário encontrado.</td></tr>`;
+                    return;
+                }
+
+                usuarios.forEach(u => {
+                    const isRoleAdmin = u.role === 'ROLE_ADMIN';
+                    const badgeRole = isRoleAdmin
+                        ? `<span class="badge bg-warning text-dark border border-warning rounded-pill"><i class="bi bi-shield-fill me-1"></i> ADMIN</span>`
+                        : `<span class="badge bg-secondary text-light border border-secondary rounded-pill">USER</span>`;
+
+                    const badgeTelegram = u.telegramConectado
+                        ? `<span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Conectado</span>`
+                        : `<span class="text-muted"><i class="bi bi-x-circle me-1"></i> Não vinculado</span>`;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold">${u.id}</td>
+                            <td class="fw-semibold text-white">${u.email}</td>
+                            <td>${badgeRole}</td>
+                            <td>${badgeTelegram}</td>
+                            <td>
+                                <button onclick="verProdutosUsuario(${u.id}, '${u.email}')" class="btn btn-sm btn-outline-info rounded-pill">
+                                    <i class="bi bi-eye-fill me-1"></i> ${u.totalProdutos} produtos
+                                </button>
+                            </td>
+                            <td class="text-end">
+                                <button onclick="excluirUsuario(${u.id}, '${u.email}')" class="btn btn-sm btn-outline-danger" title="Suspender / Remover Usuário">
+                                    <i class="bi bi-person-x-fill me-1"></i> Remover
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            })
+            .catch(err => {
+                console.error("Erro:", err);
+                document.getElementById('tabelaUsuariosBody').innerHTML = `
+                    <tr><td colspan="6" class="text-center text-danger py-4">Erro ao carregar dados. Verifique se você está logado como ADMIN.</td></tr>
+                `;
+            });
+    }
+
+    // VER PRODUTOS DO USUÁRIO SELECIONADO
+    function verProdutosUsuario(usuarioId, email) {
+        document.getElementById('usuarioEmailModal').innerText = email;
+        const tbody = document.getElementById('tabelaProdutosUsuarioBody');
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted">Buscando produtos...</td></tr>`;
+
+        const modal = new bootstrap.Modal(document.getElementById('modalProdutosUsuario'));
+        modal.show();
+
+        fetch(`/api/admin/usuarios/${usuarioId}/produtos`)
+            .then(res => res.json())
+            .then(produtos => {
+                tbody.innerHTML = '';
+                if (produtos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-3">Este usuário não monitora nenhum produto no momento.</td></tr>`;
+                    return;
+                }
+
+                produtos.forEach(p => {
+                    const precoAtual = p.precoAtual ? `R$ ${p.precoAtual.toFixed(2)}` : 'Lendo...';
+                    const precoAlvo = p.precoDesejado ? `R$ ${p.precoDesejado.toFixed(2)}` : 'R$ 0,00';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="text-white">${p.nome}</td>
+                            <td class="text-light">${precoAtual}</td>
+                            <td class="text-accent fw-bold">${precoAlvo}</td>
+                            <td>
+                                <button onclick="excluirProdutoComoAdmin(${p.id}, ${usuarioId}, '${email}')" class="btn btn-sm btn-outline-danger" title="Excluir Produto">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+    }
+
+    // EXCLUIR PRODUTO DO USUÁRIO VIA ADMIN
+    function excluirProdutoComoAdmin(produtoId, usuarioId, email) {
+        if (confirm("Deseja realmente remover este produto do monitoramento desse usuário?")) {
+            fetch(`/api/admin/produtos/${produtoId}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.ok) {
+                        verProdutosUsuario(usuarioId, email);
+                        carregarUsuarios(); // Atualiza contador na tabela principal
+                    } else {
+                        alert("Erro ao excluir produto.");
+                    }
+                });
+        }
+    }
+
+    // REMOVER USUÁRIO
+    function excluirUsuario(usuarioId, email) {
+        if (confirm(`ATENÇÃO: Deseja realmente remover o usuário ${email}? Todos os produtos monitorados por ele também serão apagados.`)) {
+            fetch(`/api/admin/usuarios/${usuarioId}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.ok) {
+                        alert("Usuário removido com sucesso!");
+                        carregarUsuarios();
+                    } else {
+                        alert("Erro ao remover usuário.");
+                    }
+                });
+        }
+    }
+</script>
+</body>
+</html>

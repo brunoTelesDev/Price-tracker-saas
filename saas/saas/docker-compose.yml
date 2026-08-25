@@ -1,5 +1,5 @@
-version: '3.8'
 services:
+
   postgres-db:
     image: postgres:16
     container_name: tracker_db
@@ -9,3 +9,13 @@ services:
       POSTGRES_DB: pricetracker
     ports:
       - "5433:5432"
+
+  app:
+    build: .
+    container_name: price_tracker_app
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres-db

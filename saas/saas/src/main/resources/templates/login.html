@@ -2,70 +2,702 @@
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Price Tracker</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Price Tracker API - Login</title>
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+
+    <style>
+
+        /* =========================
+           CORES DO SISTEMA
+        ========================= */
+
+        :root {
+            --bg-dark: #081420;
+            --nav-bg: #0d1b2a;
+            --card-bg: #13283f;
+            --card-border: #1e3a5f;
+
+            --accent-green: #2ecc71;
+            --accent-hover: #27ae60;
+
+            --text-muted: #8fa7bd;
+        }
+
+
+        /* =========================
+           BODY
+        ========================= */
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                    radial-gradient(
+                            circle at 20% 50%,
+                            rgba(46, 204, 113, 0.08),
+                            transparent 35%
+                    ),
+                    radial-gradient(
+                            circle at 80% 50%,
+                            rgba(46, 204, 113, 0.05),
+                            transparent 35%
+                    ),
+                    var(--bg-dark);
+
+            color: white;
+
+            font-family:
+                    'Segoe UI',
+                    Tahoma,
+                    Geneva,
+                    Verdana,
+                    sans-serif;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px;
+        }
+
+
+        /* =========================
+           CONTAINER PRINCIPAL
+        ========================= */
+
+        .login-container {
+            width: 100%;
+            max-width: 1050px;
+
+            background: rgba(13, 27, 42, 0.95);
+
+            border: 1px solid var(--card-border);
+
+            border-radius: 24px;
+
+            overflow: hidden;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            box-shadow:
+                    0 30px 80px rgba(0, 0, 0, 0.55),
+                    0 0 40px rgba(46, 204, 113, 0.04);
+        }
+
+
+        /* =========================
+           LADO ESQUERDO
+        ========================= */
+
+        .welcome-section {
+            padding: 55px;
+
+            border-right: 1px solid var(--card-border);
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            background:
+                    radial-gradient(
+                            circle at 50% 40%,
+                            rgba(46, 204, 113, 0.10),
+                            transparent 45%
+                    );
+        }
+
+
+        /* LOGO */
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin-bottom: 65px;
+
+            font-size: 1.7rem;
+            font-weight: 800;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid var(--accent-green);
+
+            border-radius: 12px;
+
+            color: var(--accent-green);
+
+            background: rgba(46, 204, 113, 0.08);
+
+            font-size: 1.4rem;
+        }
+
+        .logo span {
+            color: var(--accent-green);
+        }
+
+
+        /* TÍTULO */
+
+        .welcome-title {
+            font-size: 3rem;
+
+            font-weight: 800;
+
+            line-height: 1.1;
+
+            margin-bottom: 20px;
+        }
+
+        .welcome-title span {
+            color: var(--accent-green);
+        }
+
+
+        .welcome-description {
+            color: var(--text-muted);
+
+            font-size: 1.05rem;
+
+            line-height: 1.7;
+
+            max-width: 430px;
+
+            margin-bottom: 35px;
+        }
+
+
+        /* =========================
+           BENEFÍCIOS
+        ========================= */
+
+        .feature {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+
+            flex-shrink: 0;
+
+            border-radius: 12px;
+
+            background: rgba(46, 204, 113, 0.10);
+
+            border: 1px solid rgba(46, 204, 113, 0.25);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: var(--accent-green);
+
+            font-size: 1.1rem;
+        }
+
+        .feature-title {
+            font-weight: 700;
+
+            margin-bottom: 3px;
+        }
+
+        .feature-description {
+            color: var(--text-muted);
+
+            font-size: 0.85rem;
+        }
+
+
+        /* =========================
+           LADO LOGIN
+        ========================= */
+
+        .login-section {
+            padding: 55px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        .login-title {
+            font-size: 1.8rem;
+
+            font-weight: 800;
+
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            color: var(--text-muted);
+
+            margin-bottom: 35px;
+        }
+
+
+        /* =========================
+           FORMULÁRIO
+        ========================= */
+
+        .form-label {
+            color: white;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            background: #081420 !important;
+
+            color: white !important;
+
+            border: 1px solid var(--card-border) !important;
+
+            border-radius: 12px !important;
+
+            padding: 14px 16px !important;
+
+            font-size: 0.95rem;
+        }
+
+        .form-control::placeholder {
+            color: #5c7894 !important;
+        }
+
+        .form-control:focus {
+            background: #081420 !important;
+
+            color: white !important;
+
+            border-color: var(--accent-green) !important;
+
+            box-shadow:
+                    0 0 0 3px rgba(46, 204, 113, 0.10) !important;
+        }
+
+
+        /* =========================
+           BOTÃO
+        ========================= */
+
+        .btn-login {
+            width: 100%;
+
+            margin-top: 10px;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: var(--accent-green);
+
+            color: var(--bg-dark);
+
+            font-weight: 800;
+
+            font-size: 1rem;
+
+            transition: all 0.25s ease;
+        }
+
+        .btn-login:hover {
+            background: var(--accent-hover);
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                    0 10px 25px rgba(46, 204, 113, 0.25);
+        }
+
+
+        /* =========================
+           CADASTRO
+        ========================= */
+
+        .register {
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: var(--text-muted);
+        }
+
+        .register a {
+            color: var(--accent-green);
+
+            font-weight: 700;
+
+            text-decoration: none;
+
+            margin-left: 5px;
+        }
+
+        .register a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           DIVISOR
+        ========================= */
+
+        .divider {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-top: 30px;
+
+            color: #5c7894;
+
+            font-size: 0.85rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+
+            flex: 1;
+
+            height: 1px;
+
+            background: var(--card-border);
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            position: fixed;
+
+            bottom: 15px;
+
+            left: 0;
+            right: 0;
+
+            text-align: center;
+
+            color: var(--text-muted);
+
+            font-size: 0.8rem;
+        }
+
+        .footer strong {
+            color: var(--accent-green);
+        }
+
+
+        /* =========================
+           RESPONSIVIDADE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            body {
+                padding: 20px;
+            }
+
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-section {
+                padding: 35px;
+
+                border-right: none;
+
+                border-bottom: 1px solid var(--card-border);
+            }
+
+            .login-section {
+                padding: 35px;
+            }
+
+            .logo {
+                margin-bottom: 35px;
+            }
+
+            .welcome-title {
+                font-size: 2.3rem;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .welcome-section,
+            .login-section {
+                padding: 25px;
+            }
+
+            .welcome-description {
+                font-size: 0.95rem;
+            }
+
+        }
+
+    </style>
+
 </head>
 
-<body class="bg-light">
 
-<div class="container">
+<body>
 
-    <div class="row justify-content-center mt-5">
 
-        <div class="col-md-4">
+<div class="login-container">
 
-            <div class="card shadow">
 
-                <div class="card-body">
+    <!-- =========================
+         LADO ESQUERDO
+    ========================== -->
 
-                    <h3 class="text-center mb-4">
-                        Price Tracker
-                    </h3>
+    <section class="welcome-section">
 
-                    <form th:action="@{/login}" method="post">
+        <div class="logo">
 
-                        <div class="mb-3">
+            <div class="logo-icon">
+                ↗
+            </div>
 
-                            <label>Email</label>
+            <div>
+                Price <span>Tracker</span>
+            </div>
 
-                            <input
-                                    type="email"
-                                    name="username"
-                                    class="form-control">
+        </div>
 
-                        </div>
 
-                        <div class="mb-3">
+        <h1 class="welcome-title">
 
-                            <label>Senha</label>
+            Bem-vindo ao
+            <br>
 
-                            <input
-                                    type="password"
-                                    name="password"
-                                    class="form-control">
+            <span>Price Tracker API</span>
 
-                        </div>
+        </h1>
 
-                        <button
-                                class="btn btn-primary w-100">
 
-                            Entrar
+        <p class="welcome-description">
 
-                        </button>
+            Monitore preços, receba alertas e encontre
+            as melhores oportunidades da internet
+            automaticamente.
 
-                    </form>
+        </p>
 
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                ↗
+            </div>
+
+            <div>
+
+                <div class="feature-title">
+                    Acompanhe preços
+                </div>
+
+                <div class="feature-description">
+                    Monitore a variação dos preços dos produtos.
                 </div>
 
             </div>
 
         </div>
 
-    </div>
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🔔
+            </div>
+
+            <div>
+
+                <div class="feature-title">
+                    Alertas inteligentes
+                </div>
+
+                <div class="feature-description">
+                    Receba notificações quando o preço atingir seu objetivo.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                $
+            </div>
+
+            <div>
+
+                <div class="feature-title">
+                    Economize mais
+                </div>
+
+                <div class="feature-description">
+                    Encontre oportunidades e compre pelo melhor preço.
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =========================
+         LADO DIREITO
+    ========================== -->
+
+    <section class="login-section">
+
+
+        <h2 class="login-title">
+
+            Acesse sua conta
+
+        </h2>
+
+
+        <p class="login-subtitle">
+
+            Entre para continuar monitorando seus produtos.
+
+        </p>
+
+
+        <form th:action="@{/login}" method="post">
+
+
+            <div class="mb-4">
+
+                <label
+                        for="email"
+                        class="form-label">
+
+                    Email
+
+                </label>
+
+                <input
+                        type="email"
+                        id="email"
+                        name="username"
+                        class="form-control"
+                        placeholder="Digite seu email"
+                        autocomplete="email"
+                        required>
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <label
+                        for="senha"
+                        class="form-label">
+
+                    Senha
+
+                </label>
+
+                <input
+                        type="password"
+                        id="senha"
+                        name="password"
+                        class="form-control"
+                        placeholder="Digite sua senha"
+                        autocomplete="current-password"
+                        required>
+
+            </div>
+
+
+            <button
+                    type="submit"
+                    class="btn-login">
+
+                Entrar
+
+            </button>
+
+
+        </form>
+
+
+        <div class="divider">
+
+            ou
+
+        </div>
+
+
+        <div class="register">
+
+            Não possui uma conta?
+
+            <a href="/cadastro">
+                Criar conta
+            </a>
+
+        </div>
+
+
+    </section>
+
 
 </div>
+
+
+<div class="footer">
+
+    <strong>Price Tracker API</strong>
+
+    <br>
+
+    © 2026 Todos os direitos reservados.
+
+</div>
+
 
 </body>
 

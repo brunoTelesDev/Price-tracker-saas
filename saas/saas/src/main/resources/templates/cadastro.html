@@ -6,110 +6,796 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Price Tracker - Cadastro</title>
+    <title>Price Tracker - Criar conta</title>
 
     <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
             rel="stylesheet">
 
+    <style>
+
+        :root {
+            --bg-dark: #081420;
+            --nav-bg: #0d1b2a;
+            --card-bg: #13283f;
+            --card-border: #1e3a5f;
+
+            --accent-green: #2ecc71;
+            --accent-hover: #27ae60;
+
+            --text-muted: #8fa7bd;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background:
+                    radial-gradient(
+                            circle at 20% 50%,
+                            rgba(46, 204, 113, 0.08),
+                            transparent 35%
+                    ),
+                    radial-gradient(
+                            circle at 80% 50%,
+                            rgba(46, 204, 113, 0.05),
+                            transparent 35%
+                    ),
+                    var(--bg-dark);
+
+            color: white;
+
+            font-family:
+                    'Segoe UI',
+                    Tahoma,
+                    Geneva,
+                    Verdana,
+                    sans-serif;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 30px;
+        }
+
+
+        /* =========================
+           CARD PRINCIPAL
+        ========================= */
+
+        .cadastro-container {
+            width: 100%;
+            max-width: 1000px;
+
+            background: rgba(13, 27, 42, 0.95);
+
+            border: 1px solid var(--card-border);
+
+            border-radius: 24px;
+
+            overflow: hidden;
+
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+
+            box-shadow:
+                    0 30px 80px rgba(0, 0, 0, 0.55),
+                    0 0 40px rgba(46, 204, 113, 0.04);
+        }
+
+
+        /* =========================
+           LADO ESQUERDO
+        ========================= */
+
+        .welcome-section {
+            padding: 55px;
+
+            border-right: 1px solid var(--card-border);
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            background:
+                    radial-gradient(
+                            circle at 50% 40%,
+                            rgba(46, 204, 113, 0.10),
+                            transparent 45%
+                    );
+        }
+
+
+        /* LOGO */
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            margin-bottom: 55px;
+
+            font-size: 1.7rem;
+            font-weight: 800;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid var(--accent-green);
+
+            border-radius: 12px;
+
+            color: var(--accent-green);
+
+            background: rgba(46, 204, 113, 0.08);
+
+            font-size: 1.4rem;
+        }
+
+        .logo span {
+            color: var(--accent-green);
+        }
+
+
+        /* TÍTULO */
+
+        .welcome-title {
+            font-size: 2.7rem;
+
+            font-weight: 800;
+
+            line-height: 1.1;
+
+            margin-bottom: 20px;
+        }
+
+        .welcome-title span {
+            color: var(--accent-green);
+        }
+
+
+        .welcome-description {
+            color: var(--text-muted);
+
+            font-size: 1rem;
+
+            line-height: 1.7;
+
+            max-width: 400px;
+
+            margin-bottom: 35px;
+        }
+
+
+        /* =========================
+           BENEFÍCIOS
+        ========================= */
+
+        .feature {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 20px;
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+
+            flex-shrink: 0;
+
+            border-radius: 12px;
+
+            background: rgba(46, 204, 113, 0.10);
+
+            border: 1px solid rgba(46, 204, 113, 0.25);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: var(--accent-green);
+
+            font-size: 1.1rem;
+        }
+
+        .feature-title {
+            font-weight: 700;
+
+            margin-bottom: 3px;
+        }
+
+        .feature-description {
+            color: var(--text-muted);
+
+            font-size: 0.82rem;
+        }
+
+
+        /* =========================
+           LADO DO CADASTRO
+        ========================= */
+
+        .cadastro-section {
+            padding: 55px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+
+        .cadastro-title {
+            font-size: 1.8rem;
+
+            font-weight: 800;
+
+            margin-bottom: 8px;
+        }
+
+        .cadastro-subtitle {
+            color: var(--text-muted);
+
+            margin-bottom: 30px;
+        }
+
+
+        /* =========================
+           FORMULÁRIO
+        ========================= */
+
+        .form-label {
+            color: white;
+
+            font-weight: 600;
+
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            background: #081420 !important;
+
+            color: white !important;
+
+            border: 1px solid var(--card-border) !important;
+
+            border-radius: 12px !important;
+
+            padding: 14px 16px !important;
+
+            font-size: 0.95rem;
+        }
+
+        .form-control::placeholder {
+            color: #5c7894 !important;
+        }
+
+        .form-control:focus {
+            background: #081420 !important;
+
+            color: white !important;
+
+            border-color: var(--accent-green) !important;
+
+            box-shadow:
+                    0 0 0 3px rgba(46, 204, 113, 0.10) !important;
+        }
+
+
+        /* =========================
+           BOTÃO
+        ========================= */
+
+        .btn-cadastro {
+            width: 100%;
+
+            margin-top: 8px;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 12px;
+
+            background: var(--accent-green);
+
+            color: var(--bg-dark);
+
+            font-weight: 800;
+
+            font-size: 1rem;
+
+            transition: all 0.25s ease;
+        }
+
+        .btn-cadastro:hover {
+            background: var(--accent-hover);
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                    0 10px 25px rgba(46, 204, 113, 0.25);
+        }
+
+
+        /* =========================
+           MENSAGEM
+        ========================= */
+
+        #mensagem {
+            min-height: 24px;
+
+            margin-top: 18px;
+
+            font-size: 0.9rem;
+
+            font-weight: 600;
+        }
+
+        .mensagem-erro {
+            color: #e74c3c;
+        }
+
+        .mensagem-sucesso {
+            color: var(--accent-green);
+        }
+
+
+        /* =========================
+           LOGIN
+        ========================= */
+
+        .login-link {
+            text-align: center;
+
+            margin-top: 22px;
+
+            color: var(--text-muted);
+        }
+
+        .login-link a {
+            color: var(--accent-green);
+
+            font-weight: 700;
+
+            text-decoration: none;
+
+            margin-left: 5px;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            position: fixed;
+
+            bottom: 15px;
+
+            left: 0;
+            right: 0;
+
+            text-align: center;
+
+            color: var(--text-muted);
+
+            font-size: 0.8rem;
+        }
+
+        .footer strong {
+            color: var(--accent-green);
+        }
+
+
+        /* =========================
+           RESPONSIVO
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            body {
+                padding: 20px;
+            }
+
+            .cadastro-container {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-section {
+                padding: 35px;
+
+                border-right: none;
+
+                border-bottom: 1px solid var(--card-border);
+            }
+
+            .cadastro-section {
+                padding: 35px;
+            }
+
+            .logo {
+                margin-bottom: 35px;
+            }
+
+            .welcome-title {
+                font-size: 2.3rem;
+            }
+
+        }
+
+
+        @media (max-width: 500px) {
+
+            .welcome-section,
+            .cadastro-section {
+                padding: 25px;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-<div class="container">
 
-    <div class="row justify-content-center mt-5">
+<div class="cadastro-container">
 
-        <div class="col-md-4">
 
-            <div class="card shadow">
+    <!-- =========================
+         LADO ESQUERDO
+    ========================== -->
 
-                <div class="card-body">
+    <section class="welcome-section">
 
-                    <h3 class="text-center mb-4">
-                        Criar conta
-                    </h3>
+        <div class="logo">
 
-                    <form id="formCadastro">
+            <div class="logo-icon">
+                ↗
+            </div>
 
-                        <div class="mb-3">
+            <div>
+                Price <span>Tracker</span>
+            </div>
 
-                            <label for="email" class="form-label">
-                                Email
-                            </label>
+        </div>
 
-                            <input
-                                    type="email"
-                                    id="email"
-                                    class="form-control"
-                                    placeholder="Digite seu email"
-                                    required>
 
-                        </div>
+        <h1 class="welcome-title">
 
-                        <div class="mb-3">
+            Comece a
+            <br>
 
-                            <label for="senha" class="form-label">
-                                Senha
-                            </label>
+            <span>monitorar preços.</span>
 
-                            <input
-                                    type="password"
-                                    id="senha"
-                                    class="form-control"
-                                    placeholder="Digite sua senha"
-                                    required>
+        </h1>
 
-                        </div>
 
-                        <button
-                                type="submit"
-                                class="btn btn-primary w-100">
+        <p class="welcome-description">
 
-                            Criar conta
+            Crie sua conta gratuitamente e acompanhe
+            os preços dos produtos que você deseja.
+            Quando o preço baixar, o sistema avisa você.
 
-                        </button>
+        </p>
 
-                    </form>
 
-                    <div id="mensagem" class="text-center mt-3"></div>
+        <div class="feature">
 
-                    <div class="text-center mt-3">
+            <div class="feature-icon">
+                ✓
+            </div>
 
-                        <span>Já possui uma conta?</span>
+            <div>
 
-                        <a href="/login">
-                            Entrar
-                        </a>
+                <div class="feature-title">
+                    Monitoramento automático
+                </div>
 
-                    </div>
-
+                <div class="feature-description">
+                    O sistema verifica os preços automaticamente.
                 </div>
 
             </div>
 
         </div>
 
-    </div>
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                🔔
+            </div>
+
+            <div>
+
+                <div class="feature-title">
+                    Receba alertas
+                </div>
+
+                <div class="feature-description">
+                    Seja avisado quando o preço atingir sua meta.
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="feature">
+
+            <div class="feature-icon">
+                $
+            </div>
+
+            <div>
+
+                <div class="feature-title">
+                    Compre pelo melhor preço
+                </div>
+
+                <div class="feature-description">
+                    Defina quanto deseja pagar e deixe o sistema trabalhar.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         FORMULÁRIO
+    ========================== -->
+
+    <section class="cadastro-section">
+
+
+        <h2 class="cadastro-title">
+
+            Criar sua conta
+
+        </h2>
+
+
+        <p class="cadastro-subtitle">
+
+            Preencha seus dados para começar.
+
+        </p>
+
+
+        <form id="formCadastro">
+
+
+            <!-- EMAIL -->
+
+            <div class="mb-4">
+
+                <label
+                        for="email"
+                        class="form-label">
+
+                    Email
+
+                </label>
+
+                <input
+                        type="email"
+                        id="email"
+                        class="form-control"
+                        placeholder="Digite seu email"
+                        autocomplete="email"
+                        required>
+
+            </div>
+
+
+            <!-- SENHA -->
+
+            <div class="mb-4">
+
+                <label
+                        for="senha"
+                        class="form-label">
+
+                    Senha
+
+                </label>
+
+                <input
+                        type="password"
+                        id="senha"
+                        class="form-control"
+                        placeholder="Digite sua senha"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required>
+
+            </div>
+
+
+            <!-- CONFIRMAR SENHA -->
+
+            <div class="mb-4">
+
+                <label
+                        for="confirmarSenha"
+                        class="form-label">
+
+                    Confirmar senha
+
+                </label>
+
+                <input
+                        type="password"
+                        id="confirmarSenha"
+                        class="form-control"
+                        placeholder="Digite sua senha novamente"
+                        autocomplete="new-password"
+                        minlength="6"
+                        required>
+
+            </div>
+
+
+            <button
+                    type="submit"
+                    class="btn-cadastro">
+
+                Criar conta
+
+            </button>
+
+
+        </form>
+
+
+        <!-- MENSAGEM -->
+
+        <div
+                id="mensagem"
+                class="text-center">
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <div class="login-link">
+
+            Já possui uma conta?
+
+            <a href="/login">
+                Entrar
+            </a>
+
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+<div class="footer">
+
+    <strong>Price Tracker API</strong>
+
+    <br>
+
+    © 2026 Todos os direitos reservados.
 
 </div>
 
 
 <script>
 
-    document.getElementById("formCadastro")
-        .addEventListener("submit", async function(event) {
+    const form = document.getElementById("formCadastro");
 
-            event.preventDefault();
+    const mensagem = document.getElementById("mensagem");
 
-            const email = document.getElementById("email").value;
-            const senha = document.getElementById("senha").value;
-            const mensagem = document.getElementById("mensagem");
 
-            try {
+    form.addEventListener("submit", async function(event) {
 
-                const response = await fetch("/api/usuarios/cadastrar", {
+        event.preventDefault();
 
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const senha =
+            document.getElementById("senha").value;
+
+        const confirmarSenha =
+            document.getElementById("confirmarSenha").value;
+
+
+        mensagem.className = "";
+        mensagem.innerText = "";
+
+
+        // =========================
+        // VALIDAÇÕES
+        // =========================
+
+        if (!email) {
+
+            mostrarErro("O email é obrigatório.");
+
+            return;
+        }
+
+
+        if (!senha) {
+
+            mostrarErro("A senha é obrigatória.");
+
+            return;
+        }
+
+
+        if (senha.length < 6) {
+
+            mostrarErro("A senha deve possuir pelo menos 6 caracteres.");
+
+            return;
+        }
+
+
+        if (!confirmarSenha) {
+
+            mostrarErro("Confirme sua senha.");
+
+            return;
+        }
+
+
+        if (senha !== confirmarSenha) {
+
+            mostrarErro("As senhas não coincidem.");
+
+            return;
+        }
+
+
+        // =========================
+        // ENVIA PARA O BACKEND
+        // =========================
+
+        try {
+
+            const resposta = await fetch(
+                "/api/usuarios/cadastrar",
+                {
                     method: "POST",
 
                     headers: {
@@ -120,45 +806,63 @@
                         email: email,
                         senha: senha
                     })
-
-                });
-
-                const texto = await response.text();
-
-                if (response.ok) {
-
-                    mensagem.className = "text-center mt-3 text-success";
-
-                    mensagem.textContent =
-                        "Conta criada com sucesso!";
-
-                    setTimeout(function() {
-                        window.location.href = "/login";
-                    }, 1000);
-
-                } else {
-
-                    mensagem.className = "text-center mt-3 text-danger";
-
-                    mensagem.textContent =
-                        texto || "Erro ao criar conta.";
-
                 }
+            );
 
-            } catch (erro) {
 
-                console.error(erro);
+            const texto = await resposta.text();
 
-                mensagem.className = "text-center mt-3 text-danger";
 
-                mensagem.textContent =
-                    "Erro ao conectar com o servidor.";
+            if (!resposta.ok) {
 
+                mostrarErro(
+                    texto || "Não foi possível criar a conta."
+                );
+
+                return;
             }
 
-        });
+
+            // =========================
+            // SUCESSO
+            // =========================
+
+            mensagem.className = "mensagem-sucesso";
+
+            mensagem.innerText =
+                "Conta criada com sucesso! Redirecionando...";
+
+
+            setTimeout(function() {
+
+                window.location.href = "/login";
+
+            }, 1500);
+
+
+        } catch (erro) {
+
+            mostrarErro(
+                "Não foi possível conectar ao servidor."
+            );
+
+            console.error(erro);
+
+        }
+
+    });
+
+
+    function mostrarErro(texto) {
+
+        mensagem.className = "mensagem-erro";
+
+        mensagem.innerText = texto;
+
+    }
 
 </script>
+
 
 </body>
 
